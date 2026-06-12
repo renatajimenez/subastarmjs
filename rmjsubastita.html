@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Galer&iacute;a de Arte Subastas RMJS</title>
+    <style>
+        /* Estilos Generales Estilo Galer&iacute;a  */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background-color: #0a0a0a; 
+            color: #eeeeee;
+            overflow-y: hidden;
+            height: 100vh;
+        }
+
+        /* Barra de Navegaci&oacute;n Fija Superior */
+        header {
+            background-color: #000000;
+            color: #ffffff;
+            padding: 0 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 75px;
+            z-index: 1000;
+            border-bottom: 1px solid #222222;
+        }
+        header h1 {
+            font-size: 18pt;
+            font-weight: 300;
+            letter-spacing: 5px;
+        }
+        nav {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            max-width: 75%;
+            padding: 5px 0;
+        }
+        nav a {
+            color: #aaaaaa;
+            text-decoration: none;
+            padding: 6px 14px;
+            background-color: #111111;
+            border: 1px solid #222222;
+            border-radius: 20px;
+            font-size: 8.5pt;
+            font-weight: bold;
+            white-space: nowrap;
+            transition: all 0.3s ease;
+        }
+        nav a:hover {
+            color: #ffffff;
+            background-color: #222222;
+            border-color: #444444;
+        }
+
+        /* Contenedor con Desplazamiento Horizontal Continuo */
+        .main-wrapper {
+            display: block;
+            width: 100%;
+            height: calc(100vh - 75px);
+            margin-top: 75px;
+            overflow-x: auto;
+            overflow-y: hidden;
+            white-space: nowrap;
+            padding: 30px;
+            scroll-behavior: smooth;
+        }
+
+        /* Secciones Horizontales (Tarjetas de Exhibici&oacute;n de 440px) */
+        section {
+            display: inline-block;
+            vertical-align: top;
+            width: 440px;
+            height: 100%;
+            background-color: #111111;
+            margin: 0 15px;
+            padding: 25px;
+            border-radius: 6px;
+            border: 1px solid #222222;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.7);
+            white-space: normal;
+            position: relative;
+            transition: border-color 0.3s, transform 0.3s;
+        }
+        section:hover {
+            border-color: #444444;
+            transform: translateY(-2px);
+        }
+
+        /* Bloques especiales */
+        .section-main { border-top: 4px solid #ffffff; }
+        .section-complaints { border-top: 4px solid #ff4444; }
+
+        /* Tipograf&iacute;a Interna */
+        h2 {
+            font-size: 14pt;
+            color: #ffffff;
+            font-weight: 400;
+            letter-spacing: 1px;
+            margin-bottom: 2px;
+        }
+        .subtitle {
+            font-size: 9pt;
+            color: #888888;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            display: block;
+            margin-bottom: 15px;
+        }
+        p {
+            font-size: 9.5pt;
+            line-height: 1.5;
+            color: #cccccc;
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+
+        /* Estilo para el Contenedor de Audio Premium */
+        .audio-container {
+            background-color: #161616;
+            border: 1px solid #222222;
+            border-radius: 4px;
+            padding: 12px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        .audio-container audio {
+            width: 100%;
+            height: 32px;
+            outline: none;
+        }
+
+        /* Contenedor de la Imagen Real de la Galer&iacute;a */
+        .art-image-container {
+            width: 100%;
+            height: 230px;
+            background-color: #050505;
+            border: 1px solid #222222;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.9);
+        }
+        .art-image-container img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+        
+        /* Fallback elegante si la imagen no carga */
+        .art-image-fallback {
+            padding: 20px;
+            text-align: center;
+        }
+        .art-image-fallback .canvas-title {
+            font-size: 11pt;
+            color: #ffffff;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            font-weight: 300;
+        }
+        .art-image-fallback .canvas-desc {
+            font-size: 8.5pt;
+            color: #666666;
+            font-style: italic;
+            line-height: 1.4;
+        }
+
+        /* Precios y Botones */
+        .price-tag {
+            font-size: 14pt;
+            color: #55ff55;
+            font-family: monospace;
+            font-weight: bold;
+            margin-bottom: 12px;
+            display: inline-block;
+        }
+        .btn-add-cart {
+            background-color: #ffffff;
+            color: #000000;
+            border: none;
+            padding: 11px;
+            width: 100%;
+            font-size: 9pt;
+            font-weight: bold;
+            border-radius: 4px;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: background 0.2s;
+        }
+        .btn-add-cart:hover {
+            background-color: #cccccc;
+        }
+
+        /* Tarjeta de Contacto */
+        .contact-box {
+            background-color: #161616;
+            border-radius: 4px;
+            padding: 15px;
+            margin: 15px 0;
+            font-size: 9.5pt;
+            border: 1px solid #222222;
+        }
+        .contact-box span, .contact-box a {
+            color: #ffffff;
+            font-weight: bold;
+            text-decoration: none;
+        }
+        .contact-box a:hover {
+            text-decoration: underline;
+        }
+
+        /* Formulario */
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        label {
+            font-size: 8.5pt;
+            color: #888888;
+            font-weight: bold;
+        }
+        input[type="text"], input[type="email"], textarea {
+            width: 100%;
+            padding: 9px;
+            border: 1px solid #333333;
+            border-radius: 4px;
+            background-color: #161616;
+            color: #ffffff;
+            font-family: inherit;
+            font-size: 9.5pt;
+        }
+        textarea {
+            height: 65px;
+            resize: none;
+        }
+        .btn-submit {
+            background-color: #ff4444;
+            color: white;
+            border: none;
+            padding: 11px;
+            font-size: 9.5pt;
+            font-weight: bold;
+            border-radius: 4px;
+            cursor: pointer;
+            text-transform: uppercase;
+        }
+        .btn-submit:hover {
+            background-color: #cc3333;
+        }
+
+        /* Tablas de Aviso de Privacidad por Secci&oacute;n */
+        .privacy-notice-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            font-size: 7.5pt;
+            color: #666666;
+        }
+        .privacy-notice-table th {
+            background-color: #161616;
+            border: 1px solid #222222;
+            padding: 4px 8px;
+            text-align: left;
+            color: #aaaaaa;
+            font-size: 7pt;
+        }
+        .privacy-notice-table td {
+            border: 1px solid #222222;
+            padding: 6px 8px;
+            background-color: #0d0d0d;
+            line-height: 1.3;
+        }
+
+        /* Toast Notificaci&oacute;n */
+        .cart-toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background-color: #ffffff;
+            color: #000000;
+            padding: 15px 25px;
+            border-radius: 4px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            display: none;
+            z-index: 2000;
+            font-weight: bold;
+            font-size: 9.5pt;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>SUBASTA RMJS</h1>
+        <nav>
+            <a href="#principal">1. Principal</a>
+            <a href="#oro">2. Fragmento de Oro</a>
+            <a href="#marmol">3. Cabeza de M&aacute;rmol</a>
+            <a href="#reloj">4. El Reloj Floreciente</a>
+            <a href="#crema">5. Perfil en Crema</a>
+            <a href="#callejon">6. Callej&oacute;n RMJS</a>
+            <a href="#niebla">7. Niebla en el Bosque</a>
+            <a href="#retro">8. Comunicaci&oacute;n Retro</a>
+            <a href="#liquida">9. Esencia L&iacute;quida</a>
+            <a href="#caos">10. Patrones del Caos</a>
+            <a href="#cyber">11. La Mano Digital</a>
+            <a href="#quejas">12. Quejas y Sugerencias</a>
+        </nav>
+    </header>
+
+    <div class="main-wrapper">
+
+        <!-- SECCI&Oacute;N 1: PANEL PRINCIPAL -->
+        <section id="principal" class="section-main">
+            <h2>1. Panel Principal</h2>
+            <span class="subtitle">Exhibici&oacute;n e Informaci&oacute;n</span>
+            <p>Bienvenido a la casa de subastas definitiva para el dibujo contempor&aacute;neo y cl&aacute;sico. Una curadur&iacute;a de piezas &uacute;nicas esperando por su pr&oacute;ximo hogar. Despl&aacute;zate horizontalmente para explorar el cat&aacute;logo.</p>
+            
+            <!-- Bloque de Audio Solicitado -->
+            <div class="audio-container">
+                <label style="display:block; margin-bottom: 6px; font-size: 8pt; letter-spacing: 1px; text-transform: uppercase;">M&uacute;sica de Fondo (Ambiental IA)</label>
+                <audio controls autoplay loop>
+                    <source src="ruta-de-la-cancion.mp3" type="audio/mpeg">
+                    Tu navegador no soporta la reproducci&oacute;n de audio.
+                </audio>
+            </div>
+
+            <div class="contact-box">
+                <strong>Contacto de Soporte:</strong><br>
+                Tel&eacute;fono: <span>5591918523</span><br>
+                Email: <a href="mailto:renatamariel.jimenez@bachilleres.edu.mx">renatamariel.jimenez@bachilleres.edu.mx</a>
+            </div>
+
+            <table class="privacy-notice-table">
+                <thead><tr><th>AVISO DE PRIVACIDAD INTEGRAL RMJS 2026</th></tr></thead>
+                <tbody><tr><td>Los datos recolectados ser&aacute;n utilizados &uacute;nicamente para el procesamiento y validaci&oacute;n de las ofertas de arte de esta plataforma digital.</td></tr></tbody>
+            </table>
+        </section>
+
+        <!-- SECCI&Oacute;N 2: FRAGMENTO DE ORO -->
+        <section id="oro">
+            <h2>2. Fragmento de Oro</h2>
+            <span class="subtitle">Abstracci&oacute;n Moderna</span>
+            <div class="art-image-container">
+                <img src="https://i.etsystatic.com/62659418/r/il/a456ae/7618816878/il_570xN.7618816878_9pmu.jpg" alt="Fragmento de Oro" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                <div class="art-image-fallback" style="display:none;">
+                    <div class="canvas-title">Fragmento de Oro</div>
+                    <div class="canvas-desc">Trazos expresivos en tinta sobre papel carb&oacute;n e intervenci&oacute;n con pan de oro</div>
+                </div>
+            </div>
+            <p>Una pieza contempor&aacute;nea que utiliza trazos expresivos en tinta sobre papel carb&oacute;n, resaltada con acentos de pan de oro genuino que capturan la luz desde cualquier &aacute;ngulo.</p>
+            <div class="price-tag">$4,500 MXN</div>
+            <button class="btn-add-cart" onclick="notificarInclusion('Fragmento de Oro')">A&ntilde;adir al carrito</button>
+            <table class="privacy-notice-table">
+                <tr><td>AVISO DE PRIVACIDAD: Tratamiento confidencial de datos de postores bajo normativas vigentes RMJS.</td></tr>
+            </table>
+        </section>
+
+        <!-- SECCI&Oacute;N 3: CABEZA DE M&Aacute;RMOL -->
+        <section id="marmol">
+            <h2>3. Cabeza de M&aacute;rmol (Estudio)</h2>
+            <span class="subtitle">Elegancia Cl&aacute;sica</span>
+            <div class="art-image-container">
+                <img src="https://png.pngtree.com/png-vector/20260321/ourlarge/pngtree-angry-zeus-marble-statue-head-hyper-realistic-graphite-tattoo-design-bernini-png-image_18966054.webp" alt="Cabeza de M&aacute;rmol" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                <div class="art-image-fallback" style="display:none;">
+                    <div class="canvas-title">Cabeza de M&aacute;rmol</div>
+                    <div class="canvas-desc">Estudio anal&iacute;tico en grafito sobre papel texturizado con iluminaci&oacute;n dram&aacute;tica</div>
+                </div>
+            </div>
+            <p>Retrato detallado en grafito que rinde homenaje a la escultura cl&aacute;sica. La iluminaci&oacute;n dram&aacute;tica resalta las texturas del material p&eacute;treo en papel texturizado.</p>
+            <div class="price-tag">$6,200 MXN</div>
+            <button class="btn-add-cart" onclick="notificarInclusion('Cabeza de M&aacute;rmol (Estudio)')">A&ntilde;adir al carrito</button>
+            <table class="privacy-notice-table">
+                <tr><td>AVISO DE PRIVACIDAD: Tratamiento confidencial de datos de postores bajo normativas vigentes RMJS.</td></tr>
+            </table>
+        </section>
+
+        <!-- SECCI&Oacute;N 4: EL RELOJ FLORECIENTE -->
+        <section id="reloj">
+            <h2>4. El Reloj Floreciente</h2>
+            <span class="subtitle">Sue&ntilde;os Surrealistas</span>
+            <div class="art-image-container">
+                <img src="https://images.saatchiart.com/saatchi/2058465/art/12779151/11841329-OGJIGAMH-7.jpg" alt="El Reloj Floreciente" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                <div class="art-image-fallback" style="display:none;">
+                    <div class="canvas-title">El Reloj Floreciente</div>
+                    <div class="canvas-desc">Dibujo a l&aacute;piz fino fusionando un mecanismo de tiempo con elementos org&aacute;nicos</div>
+                </div>
+            </div>
+            <p>Una exploraci&oacute;n de la temporalidad a trav&eacute;s del surrealismo. Dibujo a l&aacute;piz fino que muestra un mecanismo de reloj fusion&aacute;ndose con la vida org&aacute;nica de una flor.</p>
+            <div class="price-tag">$3,800 MXN</div>
+            <button class="btn-add-cart" onclick="notificarInclusion('El Reloj Floreciente')">A&ntilde;adir al carrito</button>
+            <table class="privacy-notice-table">
+                <tr><td>AVISO DE PRIVACIDAD: Tratamiento confidencial de datos de postores bajo normativas vigentes RMJS.</td></tr>
+            </table>
+        </section>
+
+        <!-- SECCI&Oacute;N 5: PERFIL EN CREMA -->
+        <section id="crema">
+            <h2>5. Perfil en Cream</h2>
+            <span class="subtitle">L&iacute;neas M&iacute;nimas</span>
+            <div class="art-image-container">
+                <img src="https://render.pixels.com/images/rendered/default/print/8/8/break/images/artworkimages/medium/3/line-art-woman-flower-eye-printable-wall-decor-minimalist-floral-female-one-line-drawing-girl-mounir-khalfouf.jpg" alt="Perfil en Crema" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                <div class="art-image-fallback" style="display:none;">
+                    <div class="canvas-title">Perfil en Crema</div>
+                    <div class="canvas-desc">Arte minimalista de una sola l&iacute;nea continua sobre papel de alto gramaje color crema</div>
+                </div>
+            </div>
+            <p>Arte minimalista de una sola l&iacute;nea continua. La simplicidad del trazo captura la esencia de la figura femenina sobre un papel de alto gramaje color crema.</p>
+            <div class="price-tag">$2,500 MXN</div>
+            <button class="btn-add-cart" onclick="notificarInclusion('Perfil en Crema')">A&ntilde;adir al carrito</button>
+            <table class="privacy-notice-table">
+                <tr><td>AVISO DE PRIVACIDAD: Tratamiento confidencial de datos de postores bajo normativas vigentes RMJS.</td></tr>
+            </table>
+        </section>
+
+        <!-- SECCI&Oacute;N 6: CALLEJ&Oacute;N RMJS -->
+        <section id="callejon">
+            <h2>6. Callej&oacute;n RMJS</h2>
+            <span class="subtitle">Pulso Urbano</span>
+            <div class="art-image-container">
+                <img src="https://www.brain2canvas.com/cdn/shop/articles/featured-urban-street-art-guide-2026-trends-styles-inspirat-8ia83l_aadf8e05-97a3-49b7-985c-9f2930482a7b.jpg?v=1768038642&width=1100" alt="Callej&oacute;n RMJS" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                <div class="art-image-fallback" style="display:none;">
+                    <div class="canvas-title">Callej&oacute;n RMJS</div>
+                    <div class="canvas-desc">Boceto estilo arte callejero realizado con marcadores industriales</div>
+                </div>
+            </div>
+            <p>Boceto estilo arte callejero realizado con marcadores industriales. Una perspectiva vibrante de un callej&oacute;n urbano lleno de energ&iacute;a y grafitis detallados.</p>
+            <div class="price-tag">$3,200 MXN</div>
+            <button class="btn-add-cart" onclick="notificarInclusion('Callej&oacute;n RMJS')">A&ntilde;adir al carrito</button>
+            <table class="privacy-notice-table">
+                <tr><td>AVISO DE PRIVACIDAD: Tratamiento confidencial de datos de postores bajo normativas vigentes RMJS.</td></tr>
+            </table>
+        </section>
+
+        <!-- SECCI&Oacute;N 7: NIEBLA EN EL BOSQUE -->
+        <section id="niebla">
+            <h2>7. Niebla en el Bosque</h2>
+            <span class="subtitle">Impresi&oacute;n Natural</span>
+            <div class="art-image-container">
+                <img src="https://i.ytimg.com/vi/5pMWqfiGpLA/hq720.jpg?sqp=-oaymwE7CK4FEIIDSFryq4qpAy0IARUAAAAAGAIEAADIQj0AgKJD&rs=AOn4CLAOvZtpu9slFFqFSuSr7H4VGZFhbg" alt="Niebla en el Bosque" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                <div class="art-image-fallback" style="display:none;">
+                    <div class="canvas-title">Niebla en el Bosque</div>
+                    <div class="canvas-desc">Paisaje impresionista en carboncillo utilizando t&eacute;cnicas difusas</div>
+                </div>
+            </div>
+            <p>Paisaje impresionista en carboncillo. La t&eacute;cnica difusa crea una atm&oacute;sfera de misterio y serenidad, evocando un bosque durante el amanecer neblinoso.</p>
+            <div class="price-tag">$5,100 MXN</div>
+            <button class="btn-add-cart" onclick="notificarInclusion('Niebla en el Bosque')">A&ntilde;adir al carrito</button>
+            <table class="privacy-notice-table">
+                <tr><td>AVISO DE PRIVACIDAD: Tratamiento confidencial de datos de postores bajo normativas vigentes RMJS.</td></tr>
+            </table>
+        </section>
+
+        <!-- SECCI&Oacute;N 8: COMUNICACI&Oacute;N RETRO -->
+        <section id="retro">
+            <h2>8. Comunicaci&oacute;n Retro</h2>
+            <span class="subtitle">Vis&oacute;n Pop Art</span>
+            <div class="art-image-container">
+                <img src="https://images.stockcake.com/public/4/b/e/4be75895-1594-43fc-a37a-e37eed4befdd_large/retro-phone-art-stockcake.jpg" alt="Comunicaci&oacute;n Retro" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                <div class="art-image-fallback" style="display:none;">
+                    <div class="canvas-title">Comunicaci&oacute;n Retro</div>
+                    <div class="canvas-desc">Dibujo en tinta de colores vibrantes con trama de puntos tipo halftone</div>
+                </div>
+            </div>
+            <p>Homenaje al Pop Art cl&aacute;sico. Dibujo en tinta de colores vibrantes representando un tel&eacute;fono ic&oacute;nico con trama de puntos tipo halftone.</p>
+            <div class="price-tag">$2,900 MXN</div>
+            <button class="btn-add-cart" onclick="notificarInclusion('Comunicaci&oacute;n Retro')">A&ntilde;adir al carrito</button>
+            <table class="privacy-notice-table">
+                <tr><td>AVISO DE PRIVACIDAD: Tratamiento confidencial de datos de postores bajo normativas vigentes RMJS.</td></tr>
+            </table>
+        </section>
+
+        <!-- SECCI&Oacute;N 9: ESENCIA L&Iacute;QUIDA -->
+        <section id="liquida">
+            <h2>9. Esencia L&iacute;quida</h2>
+            <span class="subtitle">Hiperrealismo</span>
+            <div class="art-image-container">
+                <img src="https://i.ytimg.com/vi/4X9sx2fZWnA/hq720.jpg?sqp=-oaymwE7CK4FEIIDSFryq4qpAxMIARUAAAAAGAIEAADIQj0AgKJD&rs=AOn4CLAgVfMXo7ok-XujxrOGEl0wU6Y9g" alt="Esencia L&iacute;quida" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                <div class="art-image-fallback" style="display:none;">
+                    <div class="canvas-title">Esencia L&iacute;quida</div>
+                    <div class="canvas-desc">Estudio hiperrealista en carboncillo blanco sobre fondo negro absoluto</div>
+                </div>
+            </div>
+            <p>Estudio de hiperrealismo en carboncillo blanco sobre fondo negro. Captura la compleja refracci&oacute;n de la luz a trav&eacute;s de un vaso de agua con una precisi&oacute;n fotogr&aacute;fica.</p>
+            <div class="price-tag">$7,500 MXN</div>
+            <button class="btn-add-cart" onclick="notificarInclusion('Esencia L&iacute;quida')">A&ntilde;adir al carrito</button>
+            <table class="privacy-notice-table">
+                <tr><td>AVISO DE PRIVACIDAD: Tratamiento confidencial de datos de postores bajo normativas vigentes RMJS.</td></tr>
+            </table>
+        </section>
+
+        <!-- SECCI&Oacute;N 10: PATRONES DEL CAOS -->
+        <section id="caos">
+            <h2>10. Patrones del Caos</h2>
+            <span class="subtitle">Armon&iacute;a Geom&eacute;trica</span>
+            <div class="art-image-container">
+                <img src="https://www.lemon8-app.com/seo/image?item_id=7461378294370517550&index=1&sign=ade561f3dfcf9afb5c31f389964be2d6" alt="Patrones del Caos" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                <div class="art-image-fallback" style="display:none;">
+                    <div class="canvas-title">Patrones del Caos</div>
+                    <div class="canvas-desc">Dibujo t&eacute;cnico con estil&oacute;grafo combinando geometr&iacute;a y sombras matem&aacute;ticas</div>
+                </div>
+            </div>
+            <p>Dibujo t&eacute;cnico con estil&oacute;grafo que combina patrones geom&eacute;tricos complejos y sombras matem&aacute;ticas, creando una ilusi&oacute;n de profundidad infinita.</p>
+            <div class="price-tag">$4,200 MXN</div>
+            <button class="btn-add-cart" onclick="notificarInclusion('Patrones del Caos')">A&ntilde;adir al carrito</button>
+            <table class="privacy-notice-table">
+                <tr><td>AVISO DE PRIVACIDAD: Tratamiento confidencial de datos de postores bajo normativas vigentes RMJS.</td></tr>
+            </table>
+        </section>
+
+        <!-- SECCI&Oacute;N 11: LA MANO DIGITAL -->
+        <section id="cyber">
+            <h2>11. La Mano Digital</h2>
+            <span class="subtitle">Futuro Cibern&eacute;tico</span>
+            <div class="art-image-container">
+                <img src="https://png.pngtree.com/png-clipart/20250318/original/pngtree-glowing-cybernetic-circuit-lines-running-across-png-image_20680513.png" alt="La Mano Digital" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                <div class="art-image-fallback" style="display:none;">
+                    <div class="canvas-title">La Mano Digital</div>
+                    <div class="canvas-desc">Concept art digital que imagina la fusi&oacute;n entre el dibujo tradicional y la cibern&eacute;tica</div>
+                </div>
+            </div>
+            <p>Concept art digital que imagina la fusi&oacute;n entre el dibujo tradicional y la cibern&eacute;tica. Circuitos brillantes que fluyen por la estructura de una mano humana.</p>
+            <div class="price-tag">$5,500 MXN</div>
+            <button class="btn-add-cart" onclick="notificarInclusion('La Mano Digital')">A&ntilde;adir al carrito</button>
+            <table class="privacy-notice-table">
+                <tr><td>AVISO DE PRIVACIDAD: Tratamiento confidencial de datos de postores bajo normativas vigentes RMJS.</td></tr>
+            </table>
+        </section>
+
+        <!-- SECCI&Oacute;N 12: QUEJAS Y SUGERENCIAS -->
+        <section id="quejas" class="section-complaints">
+            <h2>12. Quejas y Sugerencias</h2>
+            <span class="subtitle">Mesa de Retroalimentaci&oacute;n</span>
+            <p>Tu opini&oacute;n nos ayuda a perfeccionar la experiencia. Introduce tus inquietudes aqu&iacute;:</p>
+            
+            <form action="#" method="POST" onsubmit="procesarSugerencia(event)">
+                <label for="txtNombre">Nombre Completo:</label>
+                <input type="text" id="txtNombre" name="txtNombre" required placeholder="Ej. Renata Mariel">
+
+                <label for="txtEmail">Correo Electr&oacute;nico:</label>
+                <input type="email" id="txtEmail" name="txtEmail" required placeholder="correo@bachilleres.edu.mx">
+
+                <label for="txtComentarios">Mensaje o Inquietud:</label>
+                <textarea id="txtComentarios" name="txtComentarios" required placeholder="Escribe tus comentarios aqu&iacute;..."></textarea>
+
+                <input type="submit" class="btn-submit" value="Enviar Formulario">
+            </form>
+
+            <table class="privacy-notice-table">
+                <thead><tr><th>CUMPLIMIENTO DE LEY DE DATOS PERSONALES</th></tr></thead>
+                <tbody><tr><td>Al enviar este formulario, usted autoriza el uso de su correo &uacute;nicamente para el seguimiento de su reporte.</td></tr></tbody>
+            </table>
+        </section>
+
+    </div>
+
+    <div id="cartToast" class="cart-toast">Obra seleccionada correctamente.</div>
+
+    <script>
+        function notificarInclusion(nombreObra) {
+            var elementoToast = document.getElementById('cartToast');
+            elementoToast.innerHTML = '&#10004; "' + nombreObra + '" se ha agregado al carrito.';
+            elementoToast.style.display = 'block';
+            setTimeout(function() {
+                elementoToast.style.display = 'none';
+            }, 3000);
+        }
+
+        function procesarSugerencia(e) {
+            e.preventDefault();
+            alert('Agradecemos tu mensaje. Tu sugerencia ha sido enviada al sistema central de la subasta RMJS con &eacute;xito.');
+            document.getElementById('txtNombre').value = '';
+            document.getElementById('txtEmail').value = '';
+            document.getElementById('txtComentarios').value = '';
+        }
+    </script>
+</body>
+</html>
